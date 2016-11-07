@@ -1,15 +1,18 @@
 import koa from 'koa';
 import logger from 'koa-logger';
 import route from 'koa-route';
+import bodyParser from 'koa-bodyparser';
 
 
 const app = koa();
 
 app.use(logger());
+app.use(bodyParser());
 
-app.use(route.get('/webhook', webhook));
+app.use(route.get('/webhook', getWebhook));
+app.use(route.post('/webhook', postWebhook));
 
-function *webhook() {
+function *getWebhook() {
     console.log(this.request);
 
     const {query} = this.request;
@@ -27,6 +30,12 @@ function *webhook() {
     } else {
         this.status = 400;
     }
+}
+
+function *postWebhook() {
+    console.log(this.request);
+    console.log('body', JSON.stringify(this.request.body, null, 2));
+    this.status = 200;
 }
 
 app.listen(80);
